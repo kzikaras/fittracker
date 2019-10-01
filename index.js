@@ -3,6 +3,7 @@ const app = express();
 const Sequelize = require('sequelize');
 const port = 3000;
 const handlebars = require('express-handlebars');
+const bodyParser = require('body-parser');
 
 const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
     host: 'localhost',
@@ -15,7 +16,7 @@ const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
         idle: 10000
     }
 });
-
+// TODO: move models to another file
 //models
 const Workout = db.define('workout', {
     id: {
@@ -29,72 +30,82 @@ const Workout = db.define('workout', {
     program: {
         type: Sequelize.STRING
     }
-}, { timestamps: false });
+}, {
+        timestamps: false,
+        underscored: true
+    });
 
+const Member = db.define('member', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    email: {
+        type: Sequelize.STRING
+    },
+    username: {
+        type: Sequelize.STRING
+    },
+    password: {
+        type: Sequelize.STRING
+    }
+}, {
+        timestamps: false,
+        underscored: true
+    });
+
+Member.hasMany(Workout);
 
 db.authenticate()
     .then(() => console.log('DB Connected'))
     .catch(err => console.log(err));
 
-// Test Data
-user = {
-    id: 1234,
-    email: "kurtzikaras@gmail.com",
-    entries: [
-        {
-            date: "12/23/19",
-            time: 24,
-            workout: "Running",
-            feeling: "Good"
-        },
-        {
-            date: "12/24/19",
-            time: 34,
-            workout: "Hiit",
-            feeling: "OK"
-        },
-        {
-            date: "12/24/19",
-            time: 34,
-            workout: "Hiit",
-            feeling: "OK"
-        },
-        {
-            date: "12/24/19",
-            time: 34,
-            workout: "Hiit",
-            feeling: "OK"
-        },
-        {
-            date: "12/24/19",
-            time: 34,
-            workout: "Hiit",
-            feeling: "OK"
-        }
-    ]
-}
-
 // Handlebars middleware
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.get('/login', (req, res) => {
-    Workout.findAll({ where: { id: 1 } })
-        .then((workouts) => {
-            res.render('dashboard', { workouts: workouts });
+app.post('/login', (req, res) => {
+    // TODO: make more robust and add session
+    Member.findOne({ where: { email: req.body.login_email } })
+        .then((member) => {
+            if (req.body.login_password === member.password) {
+                Workout.findAll({ where: { memberId: member.id } })
+                    .then((workouts) => {
+                        res.render('dashboard', { workouts: workouts });
+                    });
+            } else {
+                res.render('index');
+            }
         }).catch((err) => {
             console.log(err);
         });
 });
 
+// TODO verify a user doesnt exist before creating
+app.post('/signup', (req, res) => {
+    return Member.create({
+        email: req.body.email,
+        username: req.body.username,
+        password: req.body.password
+    }).then((member) => {
+        if (member) {
+            res.render('index', { member: member });
+        } else {
+            res.status(400).send('Error signing up');
+        }
+    });
+});
+
 app.get('/about', (req, res) => {
     res.render('about');
 });
-
 
 app.listen(port, () => {
     db.sync();

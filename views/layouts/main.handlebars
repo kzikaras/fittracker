@@ -22,6 +22,25 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+    <script>
+        // validate sign up form
+        $('#signup').click((e) => {
+            if ($('#password').val() !== $('#passwordconfirm').val()) {
+                e.preventDefault();
+                $('#errors').html('<h3>Passwords must match.</h3>');
+                setTimeout(() => {
+                    $('#errors').html('');
+                }, 6000);
+            }
+        });
+        // Validate login form
+        $('#login').click((e) => {
+            if (!$('#login_email').val().length || !$('#login_password').val().length) {
+                e.preventDefault();
+                alert('Please complete the form.');
+            }
+        });
+    </script>
 </body>
 
 </html>
