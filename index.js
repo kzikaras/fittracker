@@ -6,7 +6,13 @@ const port = 3000;
 const handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
 
+<<<<<<< HEAD
 // DB Setup
+=======
+//TODO: cleanup all temp_session refs once real session is implemented
+let temp_session = {};
+
+>>>>>>> add_workout_form
 const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
     host: 'localhost',
     dialect: 'postgres',
@@ -103,10 +109,14 @@ app.post('/login', (req, res) => {
     console.log(req.sessionID);
     Member.findOne({ where: { email: req.body.login_email } })
         .then((member) => {
+            temp_session.member = member;
             if (req.body.login_password === member.password) {
                 req.session.member = member;
                 Workout.findAll({ where: { memberId: member.id } })
                     .then((workouts) => {
+                        temp_session.member.workouts = workouts;
+                        console.log(temp_session.member.id);
+                        console.log(temp_session.member.workouts)
                         res.render('dashboard', { workouts: workouts });
                     });
             } else {
@@ -131,6 +141,24 @@ app.post('/signup', (req, res) => {
             res.render('index', { member: member });
         } else {
             res.status(400).send('Error signing up');
+        }
+    });
+});
+
+app.post('/add_workout', (req, res) => {
+    console.log(req.body.workout_name);
+    console.log(req.body.workout_program);
+    console.log(temp_session.member.id);
+    return Workout.create({
+        name: req.body.workout_name,
+        program: req.body.workout_program,
+        member_id: temp_session.member.id
+    }).then((workout) => {
+        if (workout) {
+            temp_session.member.workouts.push(workout);
+            res.render('dashboard', { workouts: temp_session.member.workouts });
+        } else {
+            res.status(400).send('Error adding workout');
         }
     });
 });

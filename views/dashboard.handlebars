@@ -1,5 +1,6 @@
 <div class="container">
-    <h2>Dashboard</h2>
+    <h2>Fitness Dashboard</h2>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#workoutModal">Add new workout</button>
     {{#each workouts}}
     <ul class="list-group">
         <li class="list-group-item">Name: {{this.name}}</li>
@@ -7,4 +8,33 @@
     </ul>
     <br>
     {{/each}}
+    <!-- Modal -->
+    <div class="modal fade" id="workoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add a Workout</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/add_workout" method="post">
+                        <div class="form-group">
+                            <label for="workout_name">Name</label>
+                            <input name="workout_name" id="workout_name" type="text" class="form-control"
+                                aria-describedby="workout_name_Help" placeholder="Enter workout name">
+                        </div>
+                        <div class="form-group">
+                            <label for="workout_program">Program</label>
+                            <input name="workout_program" id="workout_program" type="text" class="form-control"
+                                placeholder="Program">
+                        </div>
+                        <input id="workout_program" type="submit" class="btn btn-primary btn-block" value="Add Workout">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
