@@ -6,7 +6,10 @@ const port = 3000;
 const handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
 const flash = require('express-flash');
+const member = require('./models/Member');
+const workout = require('./models/Workout');
 
+// DB setup
 const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
     host: 'localhost',
     dialect: 'postgres',
@@ -18,55 +21,12 @@ const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
         idle: 10000
     }
 });
-// TODO: move models to another file
-//models
-const Workout = db.define('workout', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    name: {
-        type: Sequelize.STRING
-    },
-    program: {
-        type: Sequelize.STRING
-    },
-    calories_burned: {
-        type: Sequelize.INTEGER
-    },
-    duration: {
-        type: Sequelize.FLOAT
-    },
-    weight_notes: {
-        type: Sequelize.STRING
-    },
-    date: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    }
-}, {
+
+const Member = db.define('member', member, {
     timestamps: false,
     underscored: true
 });
-
-const Member = db.define('member', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    email: {
-        type: Sequelize.STRING
-    },
-    username: {
-        type: Sequelize.STRING
-    },
-    password: {
-        type: Sequelize.STRING
-    }
-}, {
+const Workout = db.define('workout', workout, {
     timestamps: false,
     underscored: true
 });
@@ -77,7 +37,7 @@ db.authenticate()
     .then(() => console.log('DB Connected'))
     .catch(err => console.log(err));
 
-// Handlebars middleware
+// Middleware
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.set('trust proxy', true);
@@ -96,7 +56,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    // TODO: make more robust and add session
+    // TODO: make more robust
     Member.findOne({ where: { email: req.body.login_email } })
         .then((member) => {
             if (req.body.login_password === member.password) {
