@@ -1,17 +1,33 @@
+<br>
 <div class="container">
     <h2>Fitness Dashboard</h2>
-    <button class="btn btn-primary" data-toggle="modal" data-target="#workoutModal">Add new workout</button>
+    <div id="buttons">
+        <a href="/logout"><button class="btn btn-danger">Logout</button></a>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#workoutModal">Add new workout</button>
+    </div>
     {{#each workouts}}
-    <ul class="list-group">
-        <li class="list-group-item">Name: {{this.name}}</li>
-        <li class="list-group-item">Program: {{this.program}}</li>
-    </ul>
+    {{ this.date }}
+    <div class="container workout">
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item">Name: {{this.name}}</li>
+                    <li class="list-group-item">Program: {{this.program}}</li>
+                    <li class="list-group-item">Duration: {{this.duration}}</li>
+                    <li class="list-group-item">Calories Burned: {{this.calories_burned}}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="card">{{this.weight_notes}}</div>
+            </div>
+        </div>
+    </div>
     <br>
     {{/each}}
     <!-- Modal -->
     <div class="modal fade" id="workoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Add a Workout</h5>
@@ -20,18 +36,40 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="/add_workout" method="post">
-                        <div class="form-group">
-                            <label for="workout_name">Name</label>
-                            <input name="workout_name" id="workout_name" type="text" class="form-control"
-                                aria-describedby="workout_name_Help" placeholder="Enter workout name">
+                    <form class="container-fluid" action="/add_workout" method="post">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="workout_name">Name*</label>
+                                    <input name="workout_name" id="workout_name" type="text" class="form-control"
+                                        aria-describedby="workout_name_Help" placeholder="Enter workout name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="workout_program">Program*</label>
+                                    <input name="workout_program" id="workout_program" type="text" class="form-control"
+                                        placeholder="Program">
+                                </div>
+                                <div class="form-group">
+                                    <label for="duration">Duration</label>
+                                    <input name="duration" id="duration" type="number" class="form-control"
+                                        placeholder="Duration">
+                                </div>
+                                <div class="form-group">
+                                    <label for="calories_burned">Calories Burned</label>
+                                    <input name="calories_burned" id="calories_burned" type="number"
+                                        class="form-control" placeholder="Calories Burned">
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="weight_notes">Weight Notes</label>
+                                    <textarea class="form-control" name="weight_notes" id="weight_notes" cols="30"
+                                        rows="10"></textarea>
+                                </div>
+                                <input id="add_workout" type="submit" class="btn btn-primary btn-block"
+                                    value="Add Workout">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="workout_program">Program</label>
-                            <input name="workout_program" id="workout_program" type="text" class="form-control"
-                                placeholder="Program">
-                        </div>
-                        <input id="workout_program" type="submit" class="btn btn-primary btn-block" value="Add Workout">
                     </form>
                 </div>
             </div>

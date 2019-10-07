@@ -5,14 +5,8 @@ const session = require('express-session');
 const port = 3000;
 const handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
+const flash = require('express-flash');
 
-<<<<<<< HEAD
-// DB Setup
-=======
-//TODO: cleanup all temp_session refs once real session is implemented
-let temp_session = {};
-
->>>>>>> add_workout_form
 const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
     host: 'localhost',
     dialect: 'postgres',
@@ -37,11 +31,25 @@ const Workout = db.define('workout', {
     },
     program: {
         type: Sequelize.STRING
+    },
+    calories_burned: {
+        type: Sequelize.INTEGER
+    },
+    duration: {
+        type: Sequelize.FLOAT
+    },
+    weight_notes: {
+        type: Sequelize.STRING
+    },
+    date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW
     }
 }, {
-        timestamps: false,
-        underscored: true
-    });
+    timestamps: false,
+    underscored: true
+});
 
 const Member = db.define('member', {
     id: {
@@ -59,9 +67,9 @@ const Member = db.define('member', {
         type: Sequelize.STRING
     }
 }, {
-        timestamps: false,
-        underscored: true
-    });
+    timestamps: false,
+    underscored: true
+});
 
 Member.hasMany(Workout);
 
@@ -76,28 +84,12 @@ app.set('trust proxy', true);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session({
-    genid: (req) => {
-        return Math.random();
-    },
     secret: 'otisman',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: false,
-        maxAge: 8640
-    }
 }));
 
-
 app.get('/', (req, res) => {
-    console.log(req.session);
-    console.log(req.sessionID);
     if (req.session.member) {
-        Workout.findAll({ where: { memberId: req.session.member.id } })
-            .then((workouts) => {
-                res.render('dashboard', { workouts: workouts });
-            });
-        res.render('dashboard', workouts = workouts)
+        res.render('dashboard', { workouts: req.session.workouts });
     } else {
         res.render('index');
     }
@@ -105,67 +97,76 @@ app.get('/', (req, res) => {
 
 app.post('/login', (req, res) => {
     // TODO: make more robust and add session
-    console.log(req.session);
-    console.log(req.sessionID);
     Member.findOne({ where: { email: req.body.login_email } })
         .then((member) => {
-            temp_session.member = member;
             if (req.body.login_password === member.password) {
                 req.session.member = member;
                 Workout.findAll({ where: { memberId: member.id } })
                     .then((workouts) => {
-                        temp_session.member.workouts = workouts;
-                        console.log(temp_session.member.id);
-                        console.log(temp_session.member.workouts)
+                        edited_workouts = [];
+                        workouts.forEach((workout) => {
+                            workout = String(workout.date);
+                            edited_workouts.push(workout);
+                        });
+                        req.session.workouts = edited_workouts;
                         res.render('dashboard', { workouts: workouts });
                     });
             } else {
-                req.session.save();
+                // TODO flash a message that the login was invalid
                 res.render('index');
             }
         }).catch((err) => {
-            console.log(err);
+            res.render('error_page', { error: err });
         });
 });
 
 // TODO verify a user doesnt exist before creating
 app.post('/signup', (req, res) => {
-    console.log(req.session);
-    console.log(req.sessionID);
     return Member.create({
         email: req.body.email,
         username: req.body.username,
         password: req.body.password
     }).then((member) => {
         if (member) {
-            res.render('index', { member: member });
+            req.session.member = member;
+            Workout.findAll({ where: { memberId: member.id } })
+                .then((workouts) => {
+                    req.session.workouts = workouts;
+                    res.render('dashboard', { workouts: workouts });
+                });
         } else {
             res.status(400).send('Error signing up');
         }
     });
 });
 
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.render('index');
+});
+
 app.post('/add_workout', (req, res) => {
-    console.log(req.body.workout_name);
-    console.log(req.body.workout_program);
-    console.log(temp_session.member.id);
     return Workout.create({
         name: req.body.workout_name,
         program: req.body.workout_program,
-        member_id: temp_session.member.id
+        duration: req.body.duration,
+        calories_burned: req.body.calories_burned,
+        memberId: req.session.member.id,
+        weight_notes: req.body.weight_notes
     }).then((workout) => {
         if (workout) {
-            temp_session.member.workouts.push(workout);
-            res.render('dashboard', { workouts: temp_session.member.workouts });
+            req.session.workouts.push(workout);
+            res.render('dashboard', { workouts: req.session.workouts });
         } else {
             res.status(400).send('Error adding workout');
         }
-    });
+    }).
+        catch((err) => {
+            res.render('error_page', { error: err });
+        });
 });
 
 app.get('/about', (req, res) => {
-    console.log(req.session);
-    console.log(req.sessionID);
     res.render('about');
 });
 

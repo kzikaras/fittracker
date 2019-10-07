@@ -7,6 +7,23 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        #buttons {
+            margin: 2px 2px 12px 0px;
+        }
+
+        .card {
+            height: 100%;
+            padding: 8px;
+        }
+
+        .workout {
+            border: 1px solid rgba(0, 0, 0, 0.315);
+            border-radius: 6px;
+            padding: 16px;
+            background: rgba(206, 203, 203, 0.315);
+        }
+    </style>
     <title>BB Hybrid</title>
 </head>
 
@@ -36,6 +53,33 @@
         // Validate login form
         $('#login').click((e) => {
             if (!$('#login_email').val().length || !$('#login_password').val().length) {
+                e.preventDefault();
+                alert('Please complete the form.');
+            }
+        });
+        // Validate sign up form
+        $('#signup').click((e) => {
+            if (
+                !$('#signup_email').val().length ||
+                !$('#signup_username').val().length ||
+                !$('#signup_password').val().length ||
+                !$('#password_confirm').val().length
+            ) {
+                e.preventDefault();
+                alert('Please complete the form.');
+            }
+            if ($('#signup_password').val() !== $('#password_confirm').val()) {
+                e.preventDefault();
+                alert('Passwords must match');
+            }
+        });
+        // Validate new workout form
+        $('#add_workout').click((e) => {
+            console.log('click');
+            if (
+                !$('#workout_name').val().length ||
+                !$('#workout_program').val().length
+            ) {
                 e.preventDefault();
                 alert('Please complete the form.');
             }
