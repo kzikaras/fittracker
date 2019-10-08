@@ -13,6 +13,9 @@ const Member = {
     },
     password: {
         type: Sequelize.STRING
+    },
+    weight: {
+        type: Sequelize.STRING
     }
 };
 

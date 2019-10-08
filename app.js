@@ -50,7 +50,11 @@ app.use(session({
 
 app.get('/', (req, res) => {
     if (req.session.member) {
-        res.render('dashboard', { workouts: req.session.workouts });
+        res.render('dashboard', {
+            workouts: req.session.workouts,
+            member: req.session.member,
+            weight: req.session.member.weight
+        });
     } else {
         res.render('index');
     }
@@ -70,7 +74,11 @@ app.post('/login', (req, res) => {
                             edited_workouts.push(workout);
                         });
                         req.session.workouts = edited_workouts;
-                        res.render('dashboard', { workouts: workouts });
+                        res.render('dashboard', {
+                            workouts: req.session.workouts,
+                            member: req.session.member,
+                            weight: req.session.member.weight
+                        });
                     });
             } else {
                 // TODO flash a message that the login was invalid
@@ -86,14 +94,19 @@ app.post('/signup', (req, res) => {
     return Member.create({
         email: req.body.email,
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        weight: '[]'
     }).then((member) => {
         if (member) {
             req.session.member = member;
             Workout.findAll({ where: { memberId: member.id } })
                 .then((workouts) => {
                     req.session.workouts = workouts;
-                    res.render('dashboard', { workouts: workouts });
+                    res.render('dashboard', {
+                        workouts: req.session.workouts,
+                        member: req.session.member,
+                        weight: req.session.member.weight
+                    });
                 });
         } else {
             res.status(400).send('Error signing up');
@@ -117,13 +130,30 @@ app.post('/add_workout', (req, res) => {
     }).then((workout) => {
         if (workout) {
             req.session.workouts.push(workout);
-            res.render('dashboard', { workouts: req.session.workouts });
+            res.render('dashboard', {
+                workouts: req.session.workouts,
+                member: req.session.member,
+                weight: req.session.member.weight
+            });
         } else {
             res.status(400).send('Error adding workout');
         }
     }).
         catch((err) => {
             res.render('error_page', { error: err });
+        });
+});
+// TODO add weight history edit
+app.post('/update_weight', (req, res) => {
+    Member.findOne({ where: { email: req.session.member.email } })
+        .then((member) => {
+            member.update({ weight: req.body.weight });
+            req.session.member.weight = req.body.weight;
+            res.render('dashboard', {
+                workouts: req.session.workouts,
+                member: req.session.member,
+                weight: req.session.member.weight
+            });
         });
 });
 
