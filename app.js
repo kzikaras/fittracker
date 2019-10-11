@@ -143,6 +143,7 @@ app.post('/add_workout', (req, res) => {
             res.render('error_page', { error: err });
         });
 });
+
 // TODO add weight history edit
 app.post('/update_weight', (req, res) => {
     Member.findOne({ where: { email: req.session.member.email } })
