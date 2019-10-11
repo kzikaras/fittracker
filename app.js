@@ -70,7 +70,7 @@ app.post('/login', (req, res) => {
                     .then((workouts) => {
                         edited_workouts = [];
                         workouts.forEach((workout) => {
-                            workout = String(workout.date);
+                            workout.date = String(workout.date);
                             edited_workouts.push(workout);
                         });
                         req.session.workouts = edited_workouts;
