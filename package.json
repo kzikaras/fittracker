@@ -2,11 +2,11 @@
   "name": "fittracker",
   "version": "1.0.0",
   "description": "Fitness tracking app",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index",
-    "start": "node index"
+    "dev": "nodemon app",
+    "start": "node app"
   },
   "author": "Kurt Zikaras",
   "license": "ISC",

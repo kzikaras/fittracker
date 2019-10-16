@@ -39,52 +39,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-    <script>
-        // validate sign up form
-        $('#signup').click((e) => {
-            if ($('#password').val() !== $('#passwordconfirm').val()) {
-                e.preventDefault();
-                $('#errors').html('<h3>Passwords must match.</h3>');
-                setTimeout(() => {
-                    $('#errors').html('');
-                }, 6000);
-            }
-        });
-        // Validate login form
-        $('#login').click((e) => {
-            if (!$('#login_email').val().length || !$('#login_password').val().length) {
-                e.preventDefault();
-                alert('Please complete the form.');
-            }
-        });
-        // Validate sign up form
-        $('#signup').click((e) => {
-            if (
-                !$('#signup_email').val().length ||
-                !$('#signup_username').val().length ||
-                !$('#signup_password').val().length ||
-                !$('#password_confirm').val().length
-            ) {
-                e.preventDefault();
-                alert('Please complete the form.');
-            }
-            if ($('#signup_password').val() !== $('#password_confirm').val()) {
-                e.preventDefault();
-                alert('Passwords must match');
-            }
-        });
-        // Validate new workout form
-        $('#add_workout').click((e) => {
-            console.log('click');
-            if (
-                !$('#workout_name').val().length ||
-                !$('#workout_program').val().length
-            ) {
-                e.preventDefault();
-                alert('Please complete the form.');
-            }
-        });
-    </script>
+    <script src="/index.js"></script>
 </body>
 
 </html>
