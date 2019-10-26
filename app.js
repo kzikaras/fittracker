@@ -176,6 +176,10 @@ app.post('/update_profile', (req, res) => {
         });
 });
 
+app.delete('/delete_workout/:workout_id', (req, res) => {
+    console.log(workout_id);
+});
+
 app.get('/about', (req, res) => {
     res.render('about');
 });
