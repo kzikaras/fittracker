@@ -9,7 +9,7 @@ set_error = (message) => {
 $('#login').click((e) => {
     if (!$('#login_email').val().length || !$('#login_password').val().length) {
         e.preventDefault();
-        alert('Please complete the form.');
+        set_error('Please complete the form.');
     }
 });
 // Validate sign up form
@@ -42,6 +42,6 @@ $('#add_workout').click((e) => {
         !$('#workout_program').val().length
     ) {
         e.preventDefault();
-        alert('Please complete the form.');
+        set_error('Please complete the form.');
     }
 });

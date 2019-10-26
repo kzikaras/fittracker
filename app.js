@@ -50,6 +50,8 @@ app.use(session({
 
 app.get('/', (req, res) => {
     if (req.session.member) {
+        console.log(req.session.member);
+
         res.render('dashboard', {
             workouts: req.session.workouts,
             member: req.session.member,
@@ -95,7 +97,7 @@ app.post('/signup', (req, res) => {
         email: req.body.email,
         username: req.body.username,
         password: req.body.password,
-        weight: '[]'
+        weight: ''
     }).then((member) => {
         if (member) {
             req.session.member = member;
@@ -150,6 +152,22 @@ app.post('/update_weight', (req, res) => {
         .then((member) => {
             member.update({ weight: req.body.weight });
             req.session.member.weight = req.body.weight;
+            res.render('dashboard', {
+                workouts: req.session.workouts,
+                member: req.session.member,
+                weight: req.session.member.weight
+            });
+        });
+});
+
+app.post('/update_profile', (req, res) => {
+    Member.findOne({ where: { email: req.session.member.email } })
+        .then((member) => {
+            member.update({
+                email: req.body.email,
+                username: req.body.username,
+                password: req.body.password
+            });
             res.render('dashboard', {
                 workouts: req.session.workouts,
                 member: req.session.member,
