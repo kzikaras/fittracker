@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const methodOverride = require('method-override');
 const Sequelize = require('sequelize');
 const session = require('express-session');
 const port = 3000;
@@ -47,6 +48,8 @@ app.use(bodyParser.json());
 app.use(session({
     secret: 'otisman',
 }));
+//Method override for allowing put requests from forms
+app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
     if (req.session.member) {
@@ -168,6 +171,18 @@ app.post('/update_profile', (req, res) => {
                 username: req.body.username,
                 password: req.body.password
             });
+            res.render('dashboard', {
+                workouts: req.session.workouts,
+                member: req.session.member,
+                weight: req.session.member.weight
+            });
+        });
+});
+
+app.delete('/delete_workout/:workout_id', (req, res) => {
+    Workout.destroy({ where: { id: req.params.workout_id } })
+        .then((workout) => {
+            req.session.workouts.splice(req.session.workouts.indexOf(workout));
             res.render('dashboard', {
                 workouts: req.session.workouts,
                 member: req.session.member,

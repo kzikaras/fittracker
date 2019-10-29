@@ -28,6 +28,11 @@
             <div class="card">{{this.weight_notes}}</div>
         </div>
     </div>
+    <br>
+    <form action="/delete_workout/{{this.id}}?_method=DELETE" method="post">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="submit" value="Delete" class="btn btn-danger btn-block">
+    </form>
 </div>
 <br>
 {{/each}}
