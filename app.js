@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const flash = require('express-flash');
 const member = require('./models/Member');
 const workout = require('./models/Workout');
+const weight = require('./models/Weight');
 
 // DB setup
 const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
@@ -28,6 +29,10 @@ const Member = db.define('member', member, {
     underscored: true
 });
 const Workout = db.define('workout', workout, {
+    timestamps: false,
+    underscored: true
+});
+const Weight = db.define('weight', weight, {
     timestamps: false,
     underscored: true
 });
@@ -53,12 +58,10 @@ app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
     if (req.session.member) {
-        console.log(req.session.member);
-
         res.render('dashboard', {
             workouts: req.session.workouts,
             member: req.session.member,
-            weight: req.session.member.weight
+            weight: req.session.member.weight.weight
         });
     } else {
         res.render('index');
@@ -78,11 +81,18 @@ app.post('/login', (req, res) => {
                             workout.date = String(workout.date);
                             edited_workouts.push(workout);
                         });
-                        req.session.workouts = edited_workouts;
-                        res.render('dashboard', {
-                            workouts: req.session.workouts,
-                            member: req.session.member,
-                            weight: req.session.member.weight
+                        Weight.findAll({
+                            limit: 1,
+                            where: { member_id: req.session.member.id },
+                            order: [['date', 'DESC']]
+                        }).then((weight) => {
+                            req.session.member.weight = weight[0].dataValues.weight;
+                            req.session.workouts = edited_workouts;
+                            res.render('dashboard', {
+                                workouts: req.session.workouts,
+                                member: req.session.member,
+                                weight: req.session.member.weight
+                            });
                         });
                     });
             } else {
@@ -151,16 +161,25 @@ app.post('/add_workout', (req, res) => {
 
 // TODO add weight history edit
 app.post('/update_weight', (req, res) => {
-    Member.findOne({ where: { email: req.session.member.email } })
-        .then((member) => {
-            member.update({ weight: req.body.weight });
-            req.session.member.weight = req.body.weight;
+    return Weight.create({
+        weight: req.body.weight,
+        member_id: req.session.member.id
+    }).then((weight) => {
+        if (weight) {
+            req.session.member.weight = weight;
             res.render('dashboard', {
                 workouts: req.session.workouts,
                 member: req.session.member,
-                weight: req.session.member.weight
+                weight: req.session.member.weight.weight
             });
-        });
+        } else {
+            res.status(400).send('Error adding weight');
+        }
+    })
+    // .
+    //     // catch((err) => {
+    //     //     res.render('error_page', { error: err });
+    //     // });
 });
 
 app.post('/update_profile', (req, res) => {
