@@ -82,16 +82,16 @@ app.post('/login', (req, res) => {
                             edited_workouts.push(workout);
                         });
                         Weight.findAll({
-                            limit: 1,
                             where: { member_id: req.session.member.id },
                             order: [['date', 'DESC']]
                         }).then((weight) => {
-                            req.session.member.weight = weight[0].dataValues.weight;
+                            req.session.member.weights = weight;
                             req.session.workouts = edited_workouts;
                             res.render('dashboard', {
                                 workouts: req.session.workouts,
                                 member: req.session.member,
-                                weight: req.session.member.weight
+                                current_weight: req.session.member.weights[0],
+                                weights: req.session.member.weights
                             });
                         });
                     });
