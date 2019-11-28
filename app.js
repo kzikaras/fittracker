@@ -58,10 +58,15 @@ app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
     if (req.session.member) {
-        res.render('dashboard', {
-            workouts: req.session.workouts,
-            member: req.session.member,
-            weight: req.session.member.weight.weight
+        req.session.save(() => {
+            console.log(req.session.id);
+            console.log(req.sessionStore.sessions);
+            res.render('dashboard', {
+                workouts: req.session.workouts,
+                member: req.session.member,
+                current_weight: req.session.member.weights[0],
+                weights: req.session.member.weights
+            });
         });
     } else {
         res.render('index');
@@ -83,15 +88,26 @@ app.post('/login', (req, res) => {
                         });
                         Weight.findAll({
                             where: { member_id: req.session.member.id },
-                            order: [['date', 'DESC']]
+                            order: [['date', 'ASC']]
                         }).then((weight) => {
-                            req.session.member.weights = weight;
+                            let weights = [];
+                            console.log(weight.length);
+                            for (i = 0; i < weight.length; i++) {
+                                weights.push(weight[i].dataValues.weight);
+                            }
+                            if (weights.length > 7)
+                                weights.shift();
+                            let current_weight = weights[weights.length-1];
+                            req.session.member.weights = weights;
                             req.session.workouts = edited_workouts;
-                            res.render('dashboard', {
-                                workouts: req.session.workouts,
-                                member: req.session.member,
-                                current_weight: req.session.member.weights[0],
-                                weights: req.session.member.weights
+                            console.log(req.session.id);
+                            req.session.save(() => {
+                                res.render('dashboard', {
+                                    workouts: req.session.workouts,
+                                    member: req.session.member,
+                                    current_weight: current_weight,
+                                    weights: req.session.member.weights
+                                });
                             });
                         });
                     });

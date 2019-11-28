@@ -10,9 +10,6 @@
         <button class="btn btn-success" data-toggle="modal" data-target="#updateModal">Update Profile</button>
     </div>
 </div>
-{{#each weights}}
-    <h4>{{ this }}</h4>
-{{/each}}
 
 <div class="container">
     <canvas id="chart"></canvas>
@@ -161,23 +158,28 @@
 </div>
 </div>
 <script>
+    let weights = [];
+    {{#each weights}}
+        weights.push(String({{ this }}));
+    {{/each}}
+    console.log(weights);
     var ctx = document.getElementById('chart').getContext('2d');
     var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'line',
+        // The type of chart we want to create
+        type: 'line',
 
-    // The data for our dataset
-    data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-            label: 'Weight',
-            backgroundColor: '#007BFF',
-            borderColor: '#007BFF',
-            data: [100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-        }]
-    },
+        // The data for our dataset
+        data: {
+            labels: ['', '', '', '', '', '', ''],
+            datasets: [{
+                label: 'Weight',
+                backgroundColor: '#007BFF',
+                borderColor: '#007BFF',
+                data: weights
+            }]
+        },
 
-    // Configuration options go here
-    options: {}
-});
+        // Configuration options go here
+        options: {}
+    });
 </script>
