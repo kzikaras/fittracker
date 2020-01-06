@@ -4,13 +4,15 @@ const bcrypt = require('bcrypt');
 const methodOverride = require('method-override');
 const Sequelize = require('sequelize');
 const session = require('express-session');
-const port = 3000;
 const handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
-const flash = require('express-flash');
 const member = require('./models/Member');
 const workout = require('./models/Workout');
 const weight = require('./models/Weight');
+
+// TODOS:
+// 1. Move routes into seperate files using the router package
+
 
 // DB setup
 const db = new Sequelize('bbhybrid', 'postgres', 'Halothedog123', {
@@ -59,10 +61,21 @@ app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
     if (req.session.member) {
-        res.render('dashboard', {
-            workouts: req.session.workouts,
-            member: req.session.member,
-            weight: req.session.member.weight.weight
+        Weight.findAll({
+            limit: 1,
+            where: { member_id: req.session.member.id },
+            order: [['date', 'DESC']]
+        }).then((weight) => {
+            if (weight.length) {
+                req.session.member.weight = weight[0].dataValues.weight;
+            } else {
+                req.session.member.weight = '';
+            }
+            res.render('dashboard', {
+                workouts: req.session.workouts,
+                member: req.session.member,
+                weight: req.session.member.weight
+            });
         });
     } else {
         res.render('index');
@@ -73,46 +86,45 @@ app.post('/login', (req, res) => {
     // TODO: make more robust
     Member.findOne({ where: { email: req.body.login_email } })
     .then((member) => {
-        try {
-            bcrypt.compare(req.body.login_password, member.password, (err, resp) => {
-                console.log('Comparing');
-                if (resp === true) {
-                    req.session.member = member;
-                    Workout.findAll({ where: { memberId: member.id } })
-                        .then((workouts) => {
-                            edited_workouts = [];
-                            workouts.forEach((workout) => {
-                                workout.date = String(workout.date);
-                                edited_workouts.push(workout);
-                            });
-                            Weight.findAll({
-                                limit: 1,
-                                where: { member_id: req.session.member.id },
-                                order: [['date', 'DESC']]
-                            }).then((weight) => {
-                                console.log(weight);
-                                if (weight.length) {
-                                    req.session.member.weight = weight[0].dataValues.weight;
-                                } else {
-                                    req.session.member.weight = '';
-                                }
-                                req.session.workouts = edited_workouts;
-                                res.render('dashboard', {
-                                    workouts: req.session.workouts,
-                                    member: req.session.member,
-                                    weight: req.session.member.weight
-                                });
+        if(!member) {
+            console.log('No member found');
+            res.render('index');
+            return;
+        }
+        bcrypt.compare(req.body.login_password, member.password, (err, resp) => {
+            if (resp === true) {
+                req.session.member = member;
+                Workout.findAll({ where: { memberId: member.id } })
+                    .then((workouts) => {
+                        edited_workouts = [];
+                        workouts.forEach((workout) => {
+                            workout.date = String(workout.date);
+                            edited_workouts.push(workout);
+                        });
+                        Weight.findAll({
+                            limit: 1,
+                            where: { member_id: req.session.member.id },
+                            order: [['date', 'DESC']]
+                        }).then((weight) => {
+                            if (weight.length) {
+                                req.session.member.weight = weight[0].dataValues.weight;
+                            } else {
+                                req.session.member.weight = '';
+                            }
+                            req.session.workouts = edited_workouts;
+                            res.render('dashboard', {
+                                workouts: req.session.workouts,
+                                member: req.session.member,
+                                weight: req.session.member.weight   
                             });
                         });
-                } else {
-                    // TODO flash a message that the login was invalid
-                    res.render('index');
-                }
-            });
-        } catch(e) {
-            // TODO: Add messaging to show invalid login
-            res.render('index');
-        }
+                    });
+            } else {
+                // TODO flash a message that the login failed
+                console.log(err);
+                res.render('index');
+            }
+        });
     });
 });
 
@@ -222,6 +234,8 @@ app.delete('/delete_workout/:workout_id', (req, res) => {
 app.get('/about', (req, res) => {
     res.render('about');
 });
+
+const port = process.env.port || 3000;
 
 app.listen(port, () => {
     db.sync();

@@ -1,4 +1,3 @@
-
 set_error = (message) => {
     $('#errors').html('<h3>' + message + '</h3>');
     setTimeout(() => {

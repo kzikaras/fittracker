@@ -1,9 +1,8 @@
 set_error = (message, e) => {
-    e.preventDefault();
-    $('#errors').html('<h3>' + message + '</h3>');
+    $('.errors').html('<h3>' + message + '</h3>');
     setTimeout(() => {
-        $('#errors').html('');
-    }, 6000);
+        $('.errors').html('');
+    }, 4000);
 }
 
 // Validate update profile

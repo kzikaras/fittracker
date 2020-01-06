@@ -2,40 +2,46 @@
 <div class="container">
     <h2>Fitness Dashboard</h2>
     <h3>Weight: {{ weight }}</h3>
-    <div id="buttons">
-        <a href="/logout"><button class="btn btn-danger">Logout</button></a>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#workoutModal">Add new workout</button>
-        <button class="btn btn-success" data-toggle="modal" data-target="#weightModal">Update Weight</button>
-        <button class="btn btn-success" data-toggle="modal" data-target="#updateModal">Update Profile</button>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div id="buttons" class="card">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#workoutModal">Add new workout</button>
+            <button class="btn btn-success" data-toggle="modal" data-target="#weightModal">Update Weight</button>
+            <button class="btn btn-success" data-toggle="modal" data-target="#updateModal">Update Profile</button>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+        </div>
+        <div class="col-md-9">
+            {{#each workouts}}
+                <div class="container card workout">
+                    {{ this.date }}
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <ul class="list-group">
+                                <li class="list-group-item">Name: {{this.name}}</li>
+                                <li class="list-group-item">Program: {{this.program}}</li>
+                                <li class="list-group-item">Duration: {{this.duration}}</li>
+                                <li class="list-group-item">Calories Burned: {{this.calories_burned}}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card details">{{this.weight_notes}}</div>
+                        </div>
+                    </div>
+                    <br>
+                    <form action="/delete_workout/{{this.id}}?_method=DELETE" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="submit" value="Delete" class="btn btn-danger btn-block">
+                    </form>
+                </div>
+            {{/each}}
+        </div>
     </div>
 </div>
 
-{{#each workouts}}
-<div class="container">
-    {{ this.date }}
-</div>
-<div class="container workout">
-    <div class="row">
-        <div class="col-md-6 col-sm-12">
-            <ul class="list-group">
-                <li class="list-group-item">Name: {{this.name}}</li>
-                <li class="list-group-item">Program: {{this.program}}</li>
-                <li class="list-group-item">Duration: {{this.duration}}</li>
-                <li class="list-group-item">Calories Burned: {{this.calories_burned}}</li>
-            </ul>
-        </div>
-        <div class="col-md-6 col-sm-12">
-            <div class="card">{{this.weight_notes}}</div>
-        </div>
-    </div>
-    <br>
-    <form action="/delete_workout/{{this.id}}?_method=DELETE" method="post">
-        <input type="hidden" name="_method" value="DELETE">
-        <input type="submit" value="Delete" class="btn btn-danger btn-block">
-    </form>
-</div>
-<br>
-{{/each}}
+
 <!-- Modal -->
 <div class="modal fade" id="workoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
@@ -48,6 +54,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="errors" class="text-danger"></div>
                 <form class="container-fluid" action="/add_workout" method="post">
                     <div class="row">
                         <div class="col-md-4">
@@ -98,6 +105,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="errors" class="text-danger"></div>
                 <form class="container-fluid" action="/update_weight" method="post">
                     <div class="form-group">
                         <label for="weight">Weight:</label>
@@ -123,7 +131,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="errors" class="text-danger"></div>
+                <div class="errors" class="text-danger"></div>
                 <form class="container-fluid" action="/update_profile" method="post">
                     <div class="form-group">
                         <label for="email">Email address</label>
