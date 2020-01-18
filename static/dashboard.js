@@ -19,3 +19,16 @@ $('#update_profile').click((e) => {
     if ($('input[name="password"]').val() !== $('input[name="passwordconfirm"]').val())
         set_error('Passwords must match', e);
 });
+
+$('#calcBmi').click(function() {
+    console.log('clicked');
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        console.log(this.readyState);
+        if (this.readyState == 4 && this.status == 200) {
+            console.log('success');
+        }
+    }
+    xhttp.open('GET', '/calc_bmi', true);
+    xhttp.send();
+});

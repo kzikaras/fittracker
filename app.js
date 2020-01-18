@@ -198,11 +198,7 @@ app.post('/update_weight', (req, res) => {
         } else {
             res.status(400).send('Error adding weight');
         }
-    })
-    // .
-    //     // catch((err) => {
-    //     //     res.render('error_page', { error: err });
-    //     // });
+    });
 });
 
 app.post('/update_profile', (req, res) => {
@@ -229,6 +225,13 @@ app.delete('/delete_workout/:workout_id', (req, res) => {
                 member: req.session.member
             });
         });
+});
+
+app.get('/calc_bmi', (req, res) => {
+    const member = req.session.member.id;
+    const weight = req.session.member.weight
+    console.log(member);
+    console.log(weight);
 });
 
 app.get('/about', (req, res) => {
