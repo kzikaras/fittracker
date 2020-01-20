@@ -9,7 +9,8 @@ const weight = require('../models/Weight');
 // DB setup
 if (process.env.HEROKU_POSTGRESQL_BRONZE_URL) {
     // the application is executed on Heroku ... use the postgres database
-    db = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL, {
+    db = new Sequelize('postgres://ygmuefqwcpoqoz:eb355d03a4031d388c1fe54753d014373efb212fb5ad10fdbdaccd1e00dcaaef@ec2-54-235-96-48.compute-1.amazonaws.com:5432/d6tsfbs6l4h3im'
+        , {
         dialect:  'postgres',
         protocol: 'postgres',
         port:     5432,
