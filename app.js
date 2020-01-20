@@ -124,7 +124,7 @@ app.get('/about', (req, res) => {
 app.use('/members', members);
 app.use('/workouts', workouts);
 
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     db.sync();
