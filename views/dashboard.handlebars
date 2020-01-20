@@ -10,7 +10,7 @@
             <button class="btn btn-primary" data-toggle="modal" data-target="#workoutModal">Add new workout</button>
             <button class="btn btn-success" data-toggle="modal" data-target="#weightModal">Update Weight</button>
             <button class="btn btn-success" data-toggle="modal" data-target="#updateModal">Update Profile</button>
-            <a href="/logout" class="btn btn-danger">Logout</a>
+            <a href="/members/logout" class="btn btn-danger">Logout</a>
         </div>
         </div>
         <div class="col-md-9">
@@ -31,7 +31,7 @@
                         </div>
                     </div>
                     <br>
-                    <form action="/delete_workout/{{this.id}}?_method=DELETE" method="post">
+                    <form action="/workouts/delete_workout/{{this.id}}?_method=DELETE" method="post">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="submit" value="Delete" class="btn btn-danger btn-block">
                     </form>
@@ -55,7 +55,7 @@
             </div>
             <div class="modal-body">
                 <div class="errors" class="text-danger"></div>
-                <form class="container-fluid" action="/add_workout" method="post">
+                <form class="container-fluid" action="/workouts/add_workout" method="post">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -132,7 +132,7 @@
             </div>
             <div class="modal-body">
                 <div class="errors" class="text-danger"></div>
-                <form class="container-fluid" action="/update_profile" method="post">
+                <form class="container-fluid" action="/members/update_profile" method="post">
                     <div class="form-group">
                         <label for="email">Email address</label>
                         <input name="email" type="email" class="form-control" id="signup_email"
