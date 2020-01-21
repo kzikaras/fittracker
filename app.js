@@ -10,9 +10,6 @@ const member = require('./models/Member');
 const workout = require('./models/Workout');
 const weight = require('./models/Weight');
 
-console.log('-------------------');
-console.log(process.env);
-console.log('-------------------');
 // DB setup
 if (process.env.NODE_ENV === 'production') {
     // the application is executed on Heroku ... use the postgres database
