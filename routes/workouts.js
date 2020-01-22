@@ -57,7 +57,7 @@ router.post('/add_workout', (req, res) => {
         weight_notes: req.body.weight_notes
     }).then((workout) => {
         if (workout) {
-            req.session.workouts.push(workout);
+            req.session.workouts.unshift(workout);
             res.render('dashboard', {
                 workouts: req.session.workouts,
                 member: req.session.member

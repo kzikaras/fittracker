@@ -61,31 +61,34 @@ router.post('/login', (req, res) => {
         bcrypt.compare(req.body.login_password, member.password, (err, resp) => {
             if (resp === true) {
                 req.session.member = member;
-                Workout.findAll({ where: { memberId: member.id } })
-                    .then((workouts) => {
-                        edited_workouts = [];
-                        workouts.forEach((workout) => {
-                            workout.date = String(workout.date);
-                            edited_workouts.push(workout);
-                        });
-                        Weight.findAll({
-                            limit: 1,
-                            where: { member_id: req.session.member.id },
-                            order: [['date', 'DESC']]
-                        }).then((weight) => {
-                            if (weight.length) {
-                                req.session.member.weight = weight[0].dataValues.weight;
-                            } else {
-                                req.session.member.weight = '';
-                            }
-                            req.session.workouts = edited_workouts;
-                            res.render('dashboard', {
-                                workouts: req.session.workouts,
-                                member: req.session.member,
-                                weight: req.session.member.weight   
-                            });
+                Workout.findAll({
+                    where: { memberId: member.id },
+                    order: [['date', 'DESC']]
+                })
+                .then((workouts) => {
+                    edited_workouts = [];
+                    workouts.forEach((workout) => {
+                        workout.date = String(workout.date);
+                        edited_workouts.push(workout);
+                    });
+                    Weight.findAll({
+                        limit: 1,
+                        where: { member_id: req.session.member.id },
+                        order: [['date', 'DESC']]
+                    }).then((weight) => {
+                        if (weight.length) {
+                            req.session.member.weight = weight[0].dataValues.weight;
+                        } else {
+                            req.session.member.weight = '';
+                        }
+                        req.session.workouts = edited_workouts;
+                        res.render('dashboard', {
+                            workouts: req.session.workouts,
+                            member: req.session.member,
+                            weight: req.session.member.weight   
                         });
                     });
+                });
             } else {
                 // TODO flash a message that the login failed
                 console.log(err);
