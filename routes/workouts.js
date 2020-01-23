@@ -71,15 +71,41 @@ router.post('/add_workout', (req, res) => {
         });
 });
 
+router.get('/show_update_workout/:workout_id', (req, res) => {
+    Workout.findOne({ where: { id: req.params.workout_id } })
+    .then((workout) => {
+        res.render('update_weight', {workout: workout});
+    });
+});
+
+router.post('/update_workout/:workout_id', (req, res) => {
+    console.log('In update workout endpoint');
+    Workout.findOne({ where: { id: req.params.workout_id } })
+    .then((workout) => {
+        workout.update({
+            name: req.body.workout_name,
+            program: req.body.workout_program,
+            duration: req.body.duration,
+            calories_burned: req.body.calories_burned,
+            memberId: req.session.member.id,
+            weight_notes: req.body.weight_notes
+        });
+        res.render('dashboard', {
+            workouts: req.session.workouts,
+            member: req.session.member
+        });
+    });
+});
+
 router.delete('/delete_workout/:workout_id', (req, res) => {
     Workout.destroy({ where: { id: req.params.workout_id } })
-        .then((workout) => {
-            req.session.workouts.splice(req.session.workouts.indexOf(workout));
-            res.render('dashboard', {
-                workouts: req.session.workouts,
-                member: req.session.member
-            });
+    .then((workout) => {
+        req.session.workouts.splice(req.session.workouts.indexOf(workout));
+        res.render('dashboard', {
+            workouts: req.session.workouts,
+            member: req.session.member
         });
+    });
 });
 
 module.exports = router; 
