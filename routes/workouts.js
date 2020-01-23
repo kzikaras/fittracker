@@ -79,17 +79,22 @@ router.get('/show_update_workout/:workout_id', (req, res) => {
 });
 
 router.post('/update_workout/:workout_id', (req, res) => {
-    console.log('In update workout endpoint');
     Workout.findOne({ where: { id: req.params.workout_id } })
     .then((workout) => {
-        workout.update({
+        let new_workout = {
             name: req.body.workout_name,
             program: req.body.workout_program,
             duration: req.body.duration,
             calories_burned: req.body.calories_burned,
             memberId: req.session.member.id,
             weight_notes: req.body.weight_notes
-        });
+        };
+        workout.update(new_workout);
+        for (let i=0; i<req.session.workouts.length;i++) {
+            if (req.session.workouts[i].id == req.params.workout_id) {
+                req.session.workouts[i] = new_workout;
+            }
+        }
         res.render('dashboard', {
             workouts: req.session.workouts,
             member: req.session.member
