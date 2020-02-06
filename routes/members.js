@@ -49,13 +49,16 @@ const Weight = db.define('weight', weight, {
 
 Member.hasMany(Workout);
 
+router.use(express.static('static'));
+
 router.post('/login', (req, res) => {
     // TODO: make more robust
     Member.findOne({ where: { email: req.body.login_email } })
     .then((member) => {
         if(!member) {
             console.log('No member found');
-            res.render('index');
+            error = 'User not found';
+            res.render('index', {error: error});
             return;
         }
         bcrypt.compare(req.body.login_password, member.password, (err, resp) => {
@@ -90,9 +93,9 @@ router.post('/login', (req, res) => {
                     });
                 });
             } else {
-                // TODO flash a message that the login failed
-                console.log(err);
-                res.render('index');
+                if (resp === false)
+                    error = 'Incorrect Password';
+                res.render('index', {error: error});
             }
         });
     });
