@@ -109,9 +109,11 @@ router.post("/signup", (req, res) => {
       username: req.body.username,
       password: hash,
     }).then((member) => {
+      console.log("found member: ", member);
       if (member) {
         req.session.member = member;
         Workout.findAll({ where: { memberId: member.id } }).then((workouts) => {
+          console.log("in workouts route");
           req.session.workouts = workouts;
           res.render("dashboard", {
             workouts: req.session.workouts,
