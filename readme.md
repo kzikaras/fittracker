@@ -18,15 +18,15 @@ To get started, create an account from the homepage. Once registered, complete y
 
 ### Home Page
 
-![Home Page](path/to/homepage_screenshot.png)
+![Home Page](static/screenshots/shot1.png)
 
 ### Dashboard
 
-![Dashboard](path/to/dashboard_screenshot.png)
+![Dashboard](static/screenshots/shot2.png)
 
 ### Update Workout
 
-![Update Workout](path/to/update_workout_screenshot.png)
+![Update Workout](static/screenshots/shot3.png)
 
 ## Installation / Development
 
