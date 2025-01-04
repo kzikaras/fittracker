@@ -6,6 +6,8 @@ const member = require("../models/Member");
 const workout = require("../models/Workout");
 const weight = require("../models/Weight");
 
+// TODO - refactor everything to use async/await
+
 // DB setup
 if (process.env.NODE_ENV === "production") {
   // the application is executed on Render.com ... use the postgres database
@@ -100,8 +102,14 @@ router.post("/login", (req, res) => {
   });
 });
 
-// TODO verify a user doesnt exist before creating
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
+  let existing_member = await Member.findOne({
+    where: { email: req.body.email },
+  });
+  if (existing_member) {
+    res.render("index", { error: "User already exists" });
+    return;
+  }
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     console.log(hash);
     Member.create({
