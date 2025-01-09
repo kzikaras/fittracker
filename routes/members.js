@@ -24,6 +24,7 @@ if (process.env.NODE_ENV === "production") {
           require: true,
           rejectUnauthorized: true, // Change to true in production with proper certs
         },
+      },
     }
   );
 } else {
