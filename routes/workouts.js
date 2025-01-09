@@ -5,6 +5,7 @@ const Sequelize = require("sequelize");
 const member = require("../models/Member");
 const workout = require("../models/Workout");
 const weight = require("../models/Weight");
+const fs = require("fs");
 
 // DB setup
 if (process.env.NODE_ENV === "production") {
