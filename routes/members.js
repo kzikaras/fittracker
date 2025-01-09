@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
       dialectOptions: {
         ssl: {
           require: true,
-          rejectUnauthorized: true, // Change to true in production with proper certs
+          ca: fs.readFileSync("us-east-1-bundle.pem").toString(), // Provide the CA certificate
         },
       },
     }
