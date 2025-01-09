@@ -16,7 +16,12 @@ if (process.env.NODE_ENV === "production") {
       protocol: "postgres",
       port: 5432,
       host: "bbhybrid.cynq72xhg2av.us-east-1.rds.amazonaws.com",
-      logging: true, //false
+      logging: false,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: true, // Change to true in production with proper certs
+        },
     }
   );
 } else {
