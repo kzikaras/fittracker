@@ -14,12 +14,12 @@ const weight = require("./models/Weight");
 if (process.env.NODE_ENV === "production") {
   // the application is executed on Render.com ... use the postgres database
   db = new Sequelize(
-    "postgresql://bbhybrid_user:eHhqhNjuTmyAQGTVvcTwf5ibihOHQrIv@dpg-ctmsust2ng1s73bfe7i0-a/bbhybrid",
+    "postgresql://postgres:Halothedog123@bbhybrid.cynq72xhg2av.us-east-1.rds.amazonaws.com/bbhybrid",
     {
       dialect: "postgres",
       protocol: "postgres",
       port: 5432,
-      host: "dpg-ctmsust2ng1s73bfe7i0-a",
+      host: "bbhybrid.cynq72xhg2av.us-east-1.rds.amazonaws.com",
       logging: true, //false
     }
   );
